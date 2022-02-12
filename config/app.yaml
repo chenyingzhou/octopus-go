@@ -1,0 +1,21 @@
+datasource:
+  mysql:
+    app:
+      host: 127.0.0.1:3306
+      username: root
+      password: root
+      database: octopus
+    octopus_a:
+      host: 127.0.0.1:3306
+      username: root
+      password: root
+      database: octopus_a
+    octopus_b:
+      host: 127.0.0.1:3306
+      username: root
+      password: root
+      database: octopus_b
+  elastic-search:
+    xxx:
+      addresses:
+        - 127.0.0.1:9200
