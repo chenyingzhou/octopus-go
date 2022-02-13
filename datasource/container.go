@@ -30,6 +30,9 @@ func GetMysqlClient(name string) (*sql.DB, error) {
 		err = initMysqlClient(name)
 	}
 	cp, ok := c.mysql[name]
+	if !ok {
+		return nil, err
+	}
 	conn := cp.connection
 	return conn.(*sql.DB), err
 }
