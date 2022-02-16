@@ -48,7 +48,7 @@ func initMysqlClient(name string) error {
 	if !ok {
 		return errors.New("Mysql config not exists, name: " + name)
 	}
-	dataSourceUrl := fmt.Sprintf("%s:%s@tcp(%s)/%s", connConfig.Username, connConfig.Password, connConfig.Host, connConfig.Database)
+	dataSourceUrl := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&loc=UTC&parseTime=true", connConfig.Username, connConfig.Password, connConfig.Host, connConfig.Database)
 	DB, err := sql.Open("mysql", dataSourceUrl)
 	if err != nil {
 		return err
