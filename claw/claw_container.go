@@ -13,6 +13,7 @@ import (
 var Container = make(map[int32]Config)
 
 func init() {
+	initContainer()
 	go func() {
 		for {
 			initContainer()
