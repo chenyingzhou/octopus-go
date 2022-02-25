@@ -1,12 +1,16 @@
 package claw
 
 import (
-	"database/sql"
 	"fmt"
+	"github.com/chenyingzhou/octopus-go/consts"
 	"github.com/chenyingzhou/octopus-go/datasource"
 	"log"
 	"strings"
 )
+
+func (st *SourceTree) GetKey() string {
+	return fmt.Sprintf("%s_%s_%d", st.DataSource, st.DataSet, st.Priority)
+}
 
 func (st *SourceTree) Fetch(sf SourceFilter, data *map[string][]map[string]string) {
 	conditions := make([]string, 0)
@@ -19,7 +23,7 @@ func (st *SourceTree) Fetch(sf SourceFilter, data *map[string][]map[string]strin
 	if len(conditions) == 0 {
 		return
 	}
-	where := strings.Join(conditions, sf.Type)
+	where := strings.Join(conditions, string(sf.Type))
 	if st.ExtraCondition != "" {
 		where = "(" + st.ExtraCondition + ")" + " AND " + "(" + where + ")"
 	}
@@ -45,23 +49,39 @@ func (st *SourceTree) Fetch(sf SourceFilter, data *map[string][]map[string]strin
 	}
 
 	query := fmt.Sprintf("SELECT %s FROM `%s` WHERE %s", "`"+strings.Join(columns, "`,`")+"`", st.DataSet, where)
-	rows, err := db.Query(query)
-	defer func(rows *sql.Rows) { _ = rows.Close() }(rows)
-	if err != nil {
-		log.Printf("Queray fail, query: %s, #%v", query, err)
-		return
-	}
+	list := datasource.QueryForMapSlice(db, query)
+	(*data)[st.GetKey()] = list
 
-	for rows.Next() {
-		row := make(map[string]string)
-		for _, column := range columns {
-			row[column] = ""
+	// 处理子节点的数据
+	relationSfMap := st.matchSourceFilters(list)
+	for _, relation := range st.Relations {
+		relationSf, ok := relationSfMap[relation.SourceTree.GetKey()]
+		if ok {
+			relation.SourceTree.Fetch(relationSf, data)
 		}
-		err = rows.Scan(&row)
-		if err != nil {
-			continue
-		}
-		(*data)[st.DataSet] = append((*data)[st.DataSet], row)
 	}
+}
 
+func (st *SourceTree) matchSourceFilters(rows []map[string]string) map[string]SourceFilter {
+	sfMap := make(map[string]SourceFilter)
+	for _, relation := range st.Relations {
+		valuesMap := make(map[string][]string)
+		for _, field := range relation.Fields {
+			target := field.Target
+			column := field.Column
+			values := make([]string, 0)
+			for _, row := range rows {
+				value, ok := row[column]
+				if ok {
+					values = append(values, value)
+				}
+			}
+			valuesMap[target] = values
+		}
+		sfMap[relation.SourceTree.GetKey()] = SourceFilter{
+			Type:   consts.SourceRelationTypeAnd,
+			Values: valuesMap,
+		}
+	}
+	return sfMap
 }

@@ -16,8 +16,8 @@ func init() {
 	initContainer()
 	go func() {
 		for {
-			initContainer()
 			time.Sleep(5 * 60 * time.Second)
+			initContainer()
 		}
 	}()
 }
