@@ -38,9 +38,6 @@ func (st *SourceTree) Fetch(sf SourceFilter, data *map[string][]map[string]strin
 	if st.IdColumn != "" {
 		columns = append(columns, st.IdColumn)
 	}
-	if st.TimeColumn != "" {
-		columns = append(columns, st.TimeColumn)
-	}
 	if st.DeleteColumn != "" {
 		columns = append(columns, st.DeleteColumn)
 	}

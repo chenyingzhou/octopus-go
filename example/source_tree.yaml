@@ -1,0 +1,102 @@
+---
+sourceType: MYSQL
+dataSource: octopus_a
+dataSet: a
+priority: 0
+subscribed: true
+idColumn: id
+timeColumn: updated_time
+deleteColumn: deleted
+fields:
+  - column: id
+    target: id
+  - column: name
+    target: name
+relations:
+  - fields:
+      - column: id
+        target: a_id
+    sourceTree:
+      sourceType: MYSQL
+      dataSource: octopus_a
+      dataSet: b
+      priority: 0
+      subscribed: true
+      idColumn: id
+      timeColumn: updated_time
+      deleteColumn: deleted
+      fields:
+        - column: id
+          target: b_id
+        - column: name
+          target: b_name
+      relations:
+        - fields:
+            - column: id
+              target: b_id
+          sourceTree:
+            sourceType: MYSQL
+            dataSource: octopus_a
+            dataSet: c
+            priority: 0
+            subscribed: true
+            idColumn: id
+            timeColumn: updated_time
+            deleteColumn: deleted
+            fields:
+              - column: id
+                target: c_id
+              - column: name
+                target: c_name
+        - fields:
+            - column: id
+              target: b_id
+          sourceTree:
+            sourceType: MYSQL
+            dataSource: octopus_a
+            dataSet: d
+            priority: 0
+            subscribed: true
+            idColumn: id
+            timeColumn: updated_time
+            deleteColumn: deleted
+            fields:
+              - column: id
+                target: d_id
+              - column: name
+                target: d_name
+  - fields:
+      - column: x_id
+        target: id
+    sourceTree:
+      sourceType: MYSQL
+      dataSource: octopus_b
+      dataSet: x
+      priority: 0
+      subscribed: true
+      idColumn: id
+      timeColumn: updated_time
+      deleteColumn: deleted
+      fields:
+        - column: id
+          target: x_id
+        - column: name
+          target: x_name
+      relations:
+        - fields:
+            - column: y_id
+              target: id
+          sourceTree:
+            sourceType: MYSQL
+            dataSource: octopus_b
+            dataSet: y
+            priority: 0
+            subscribed: true
+            idColumn: id
+            timeColumn: updated_time
+            deleteColumn: deleted
+            fields:
+              - column: id
+                target: y_id
+              - column: name
+                target: y_name
