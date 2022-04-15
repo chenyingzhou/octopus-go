@@ -47,6 +47,14 @@ func (st *SourceTree) Fetch(sf SourceFilter, data *map[string][]map[string]strin
 	for _, field := range st.Fields {
 		columns = append(columns, field.Column)
 	}
+	for _, relation := range st.Relations {
+		for _, field := range relation.Fields {
+			columns = append(columns, field.Column)
+		}
+	}
+	if sf.ExtraColumns != nil {
+		columns = append(columns, sf.ExtraColumns...)
+	}
 
 	query := fmt.Sprintf("SELECT %s FROM `%s` WHERE %s", "`"+strings.Join(columns, "`,`")+"`", st.DataSet, where)
 	list := datasource.QueryForMapSlice(db, query)
@@ -66,6 +74,7 @@ func (st *SourceTree) matchSourceFilters(rows []map[string]string) map[string]So
 	sfMap := make(map[string]SourceFilter)
 	for _, relation := range st.Relations {
 		valuesMap := make(map[string][]string)
+		extraColumns := make([]string, 0)
 		for _, field := range relation.Fields {
 			target := field.Target
 			column := field.Column
@@ -77,10 +86,12 @@ func (st *SourceTree) matchSourceFilters(rows []map[string]string) map[string]So
 				}
 			}
 			valuesMap[target] = values
+			extraColumns = append(extraColumns, target)
 		}
 		sfMap[relation.SourceTree.GetKey()] = SourceFilter{
-			Type:   consts.SourceRelationTypeAnd,
-			Values: valuesMap,
+			Type:         consts.SourceRelationTypeAnd,
+			Values:       valuesMap,
+			ExtraColumns: extraColumns,
 		}
 	}
 	return sfMap
