@@ -2,17 +2,18 @@ package main
 
 import (
 	"github.com/chenyingzhou/octopus-go/claw"
+	"github.com/chenyingzhou/octopus-go/plate"
 )
 
 func main() {
-	c := claw.Container[1]
-	values := make(map[string][]string)
-	values["id"] = make([]string, 0)
-	values["id"] = append(values["id"], "1")
-	sf := claw.SourceFilter{
-		Type:   "AND",
-		Values: values,
+	food := plate.Food{
+		SourceType: "MYSQL",
+		DataSource: "octopus_a",
+		DataSet:    "a",
+		Ids:        []int32{1},
+		Rows:       nil,
+		Conditions: nil,
 	}
-	data := make(map[string][]map[string]string)
-	c.SourceTree.Fetch(sf, &data)
+	c := claw.Container[1]
+	c.Handle(food)
 }

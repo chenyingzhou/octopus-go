@@ -8,5 +8,5 @@ type Food struct {
 	DataSet    string
 	Ids        []int32
 	Rows       []map[string]string
-	Conditions string
+	Conditions []string
 }
