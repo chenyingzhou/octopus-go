@@ -110,6 +110,40 @@ func (st *SourceTree) Fetch(sf SourceFilter, withRelation bool) map[string]*[]ma
 	return result
 }
 
+func (st *SourceTree) grouping(data map[string]*[]map[string]string, stRow map[string]string) map[string]*[]map[string]string {
+	result := make(map[string]*[]map[string]string)
+	singleList := make([]map[string]string, 0)
+	singleList = append(singleList, stRow)
+	result[st.GetKey()] = &singleList
+	for _, relation := range st.Relations {
+		childKey := relation.SourceTree.GetKey()
+		childRows, ok := data[childKey]
+		if !ok {
+			continue
+		}
+		for _, childRow := range *childRows {
+			ok := true
+			for _, field := range relation.Fields {
+				columnVal, ok1 := stRow[field.Column]
+				targetVal, ok2 := childRow[field.Target]
+				ok = ok && ok1 && ok2 && (columnVal == targetVal)
+			}
+			if ok {
+				childResult := relation.SourceTree.grouping(data, childRow)
+				for key, rows := range childResult {
+					_, ok := result[key]
+					if ok {
+						*result[key] = append(*result[key], *rows...)
+					} else {
+						result[key] = rows
+					}
+				}
+			}
+		}
+	}
+	return result
+}
+
 func (st *SourceTree) matchChildSourceFilters(rows []map[string]string) map[string]SourceFilter {
 	sfMap := make(map[string]SourceFilter)
 	for _, relation := range st.Relations {

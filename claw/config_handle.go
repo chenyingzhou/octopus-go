@@ -44,8 +44,13 @@ func (cfg *Config) Handle(food plate.Food) {
 		sourceFilter = sourceTree.matchParentSourceFilters(*list, parent)
 		sourceTree = parent
 	}
-
+	// 查询所需的所有数据
 	data := rootSourceTree.Fetch(sourceFilter, true)
-	text, _ := json.Marshal(data)
-	log.Fatalln(string(text))
+	// 按根结点将数据分组
+	dataGroups := make([]map[string]*[]map[string]string, 0)
+	for _, rootRow := range *data[rootSourceTree.GetKey()] {
+		dataGroups = append(dataGroups, rootSourceTree.grouping(data, rootRow))
+	}
+	text, _ := json.Marshal(dataGroups)
+	log.Println(string(text))
 }
