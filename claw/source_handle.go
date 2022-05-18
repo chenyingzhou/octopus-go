@@ -122,17 +122,17 @@ func (st *SourceTree) grouping(data map[string]*[]map[string]string, stRow map[s
 			continue
 		}
 		for _, childRow := range *childRows {
-			ok := true
+			valid := true
 			for _, field := range relation.Fields {
 				columnVal, ok1 := stRow[field.Column]
 				targetVal, ok2 := childRow[field.Target]
-				ok = ok && ok1 && ok2 && (columnVal == targetVal)
+				valid = valid && ok1 && ok2 && (columnVal == targetVal)
 			}
-			if ok {
+			if valid {
 				childResult := relation.SourceTree.grouping(data, childRow)
 				for key, rows := range childResult {
-					_, ok := result[key]
-					if ok {
+					_, ok3 := result[key]
+					if ok3 {
 						*result[key] = append(*result[key], *rows...)
 					} else {
 						result[key] = rows
