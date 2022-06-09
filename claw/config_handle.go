@@ -1,10 +1,8 @@
 package claw
 
 import (
-	"encoding/json"
 	"github.com/chenyingzhou/octopus-go/consts"
 	"github.com/chenyingzhou/octopus-go/plate"
-	"log"
 	"strconv"
 )
 
@@ -51,6 +49,9 @@ func (cfg *Config) Handle(food plate.Food) {
 	for _, rootRow := range data[rootSourceTree.GetKey()] {
 		dataGroups = append(dataGroups, rootSourceTree.grouping(data, rootRow))
 	}
-	text, _ := json.Marshal(dataGroups)
-	log.Println(string(text))
+	docs := make([]map[string]interface{}, 0)
+	for _, dataGroup := range dataGroups {
+		docs = append(docs, cfg.SourceTree.toDocument(dataGroup))
+	}
+
 }

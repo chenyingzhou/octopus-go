@@ -5,6 +5,8 @@ import (
 	"github.com/chenyingzhou/octopus-go/consts"
 	"github.com/chenyingzhou/octopus-go/datasource"
 	"log"
+	"math"
+	"strconv"
 	"strings"
 )
 
@@ -139,6 +141,95 @@ func (st *SourceTree) grouping(data map[string][]map[string]string, stRow map[st
 					}
 				}
 			}
+		}
+	}
+	return result
+}
+
+func (st *SourceTree) toDocument(dataGroup map[string][]map[string]string) map[string]interface{} {
+	result := make(map[string]interface{})
+	stRows, ok := dataGroup[st.GetKey()]
+	if !ok {
+		return result
+	}
+	for _, field := range st.Fields {
+		colValues := make([]string, 0)
+		for _, row := range stRows {
+			value, ok1 := row[field.Column]
+			if ok1 {
+				colValues = append(colValues, value)
+			}
+		}
+		var tarValue interface{}
+		var tarValues = make([]interface{}, 0)
+
+		switch field.SourceFieldTargetType {
+		case consts.SourceFieldTargetTypeBoolExists:
+			tarValue = len(colValues) > 0
+		case consts.SourceFieldTargetTypeBoolMatchAny:
+			tarValue = len(colValues) > 0
+			for _, colValue := range colValues {
+				if colValue != "" && colValue != "0" {
+					tarValue = true
+					break
+				}
+			}
+		case consts.SourceFieldTargetTypeBoolMatchAll:
+			tarValue = len(colValues) > 0
+			for _, colValue := range colValues {
+				if colValue == "" || colValue == "0" {
+					tarValue = false
+					break
+				}
+			}
+		case consts.SourceFieldTargetTypeNumberCount:
+			tarValue = len(colValues)
+		case consts.SourceFieldTargetTypeNumberSum:
+			var sum float64 = 0
+			for _, colValue := range colValues {
+				num, err := strconv.ParseFloat(colValue, 64)
+				if err == nil {
+					continue
+				}
+				sum = sum + num
+				tarValue = sum
+			}
+		case consts.SourceFieldTargetTypeNumberMax:
+			max := -math.MaxFloat64
+			for _, colValue := range colValues {
+				num, err := strconv.ParseFloat(colValue, 64)
+				if err == nil {
+					continue
+				}
+				max = math.Max(max, num)
+				tarValue = max
+			}
+		case consts.SourceFieldTargetTypeNumberMin:
+			min := math.MaxFloat64
+			for _, colValue := range colValues {
+				num, err := strconv.ParseFloat(colValue, 64)
+				if err == nil {
+					continue
+				}
+				min = math.Max(min, num)
+				tarValue = min
+			}
+		default:
+			for _, colValue := range colValues {
+				tarValues = append(tarValues, colValue)
+			}
+		}
+		if len(tarValues) == 0 {
+			result[field.Target] = tarValue
+		} else if len(tarValues) == 1 {
+			result[field.Target] = tarValues[0]
+		} else {
+			result[field.Target] = tarValues
+		}
+	}
+	for _, relation := range st.Relations {
+		for k, v := range relation.SourceTree.toDocument(dataGroup) {
+			result[k] = v
 		}
 	}
 	return result

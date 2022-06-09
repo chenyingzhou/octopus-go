@@ -3,11 +3,11 @@ package consts
 type SourceFieldTargetType string
 
 const (
-	SOURCE_FIELD_TARGET_TYPE_BOOL_EXISTS    SourceFieldTargetType = "BOOL_EXISTS"
-	SOURCE_FIELD_TARGET_TYPE_BOOL_MATCH_ANY SourceFieldTargetType = "BOOL_MATCH_ANY"
-	SOURCE_FIELD_TARGET_TYPE_BOOL_MATCH_ALL SourceFieldTargetType = "BOOL_MATCH_ALL"
-	SOURCE_FIELD_TARGET_TYPE_NUMBER_COUNTL  SourceFieldTargetType = "NUMBER_COUNT"
-	SOURCE_FIELD_TARGET_TYPE_NUMBER_SUM     SourceFieldTargetType = "NUMBER_SUM"
-	SOURCE_FIELD_TARGET_TYPE_NUMBER_MAX     SourceFieldTargetType = "NUMBER_MAX"
-	SOURCE_FIELD_TARGET_TYPE_NUMBER_MIN     SourceFieldTargetType = "NUMBER_MIN"
+	SourceFieldTargetTypeBoolExists   SourceFieldTargetType = "BOOL_EXISTS"
+	SourceFieldTargetTypeBoolMatchAny SourceFieldTargetType = "BOOL_MATCH_ANY"
+	SourceFieldTargetTypeBoolMatchAll SourceFieldTargetType = "BOOL_MATCH_ALL"
+	SourceFieldTargetTypeNumberCount  SourceFieldTargetType = "NUMBER_COUNT"
+	SourceFieldTargetTypeNumberSum    SourceFieldTargetType = "NUMBER_SUM"
+	SourceFieldTargetTypeNumberMax    SourceFieldTargetType = "NUMBER_MAX"
+	SourceFieldTargetTypeNumberMin    SourceFieldTargetType = "NUMBER_MIN"
 )
