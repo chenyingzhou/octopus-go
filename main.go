@@ -8,8 +8,8 @@ import (
 func main() {
 	food := plate.Food{
 		SourceType: "MYSQL",
-		DataSource: "octopus_a",
-		DataSet:    "a",
+		DataSource: "octopus_b",
+		DataSet:    "x",
 		Ids:        []int32{1},
 		Rows:       nil,
 		Conditions: nil,

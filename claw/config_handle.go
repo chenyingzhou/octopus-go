@@ -41,14 +41,14 @@ func (cfg *Config) Handle(food plate.Food) {
 			}
 		}
 		list := sourceTree.Fetch(sourceFilter, false)[sourceTree.GetKey()]
-		sourceFilter = sourceTree.matchParentSourceFilters(*list, parent)
+		sourceFilter = sourceTree.matchParentSourceFilters(list, parent)
 		sourceTree = parent
 	}
 	// 查询所需的所有数据
 	data := rootSourceTree.Fetch(sourceFilter, true)
 	// 按根结点将数据分组
-	dataGroups := make([]map[string]*[]map[string]string, 0)
-	for _, rootRow := range *data[rootSourceTree.GetKey()] {
+	dataGroups := make([]map[string][]map[string]string, 0)
+	for _, rootRow := range data[rootSourceTree.GetKey()] {
 		dataGroups = append(dataGroups, rootSourceTree.grouping(data, rootRow))
 	}
 	text, _ := json.Marshal(dataGroups)

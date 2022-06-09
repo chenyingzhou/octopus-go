@@ -40,10 +40,10 @@ func (st *SourceTree) SearchParent(root *SourceTree) *SourceTree {
 	return nil
 }
 
-func (st *SourceTree) Fetch(sf SourceFilter, withRelation bool) map[string]*[]map[string]string {
-	result := make(map[string]*[]map[string]string)
+func (st *SourceTree) Fetch(sf SourceFilter, withRelation bool) map[string][]map[string]string {
+	result := make(map[string][]map[string]string)
 	emptyList := make([]map[string]string, 0)
-	result[st.GetKey()] = &emptyList
+	result[st.GetKey()] = emptyList
 	conditions := make([]string, 0)
 	for col, values := range sf.Values {
 		if len(values) == 0 {
@@ -92,7 +92,7 @@ func (st *SourceTree) Fetch(sf SourceFilter, withRelation bool) map[string]*[]ma
 
 	query := fmt.Sprintf("SELECT %s FROM `%s` WHERE %s", "`"+strings.Join(columns, "`,`")+"`", st.DataSet, where)
 	list := datasource.QueryForMapSlice(db, query)
-	result[st.GetKey()] = &list
+	result[st.GetKey()] = list
 
 	// 处理子节点的数据
 	if withRelation {
@@ -110,18 +110,18 @@ func (st *SourceTree) Fetch(sf SourceFilter, withRelation bool) map[string]*[]ma
 	return result
 }
 
-func (st *SourceTree) grouping(data map[string]*[]map[string]string, stRow map[string]string) map[string]*[]map[string]string {
-	result := make(map[string]*[]map[string]string)
+func (st *SourceTree) grouping(data map[string][]map[string]string, stRow map[string]string) map[string][]map[string]string {
+	result := make(map[string][]map[string]string)
 	singleList := make([]map[string]string, 0)
 	singleList = append(singleList, stRow)
-	result[st.GetKey()] = &singleList
+	result[st.GetKey()] = singleList
 	for _, relation := range st.Relations {
 		childKey := relation.SourceTree.GetKey()
 		childRows, ok := data[childKey]
 		if !ok {
 			continue
 		}
-		for _, childRow := range *childRows {
+		for _, childRow := range childRows {
 			valid := true
 			for _, field := range relation.Fields {
 				columnVal, ok1 := stRow[field.Column]
@@ -133,7 +133,7 @@ func (st *SourceTree) grouping(data map[string]*[]map[string]string, stRow map[s
 				for key, rows := range childResult {
 					_, ok3 := result[key]
 					if ok3 {
-						*result[key] = append(*result[key], *rows...)
+						result[key] = append(result[key], rows...)
 					} else {
 						result[key] = rows
 					}
