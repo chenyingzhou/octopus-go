@@ -2,6 +2,7 @@ package claw
 
 import (
 	"github.com/chenyingzhou/octopus-go/consts"
+	"github.com/chenyingzhou/octopus-go/datasource"
 	"github.com/chenyingzhou/octopus-go/plate"
 	"strconv"
 )
@@ -53,5 +54,5 @@ func (cfg *Config) Handle(food plate.Food) {
 	for _, dataGroup := range dataGroups {
 		docs = append(docs, cfg.SourceTree.toDocument(dataGroup))
 	}
-
+	datasource.Stdout(cfg.SourceTree.IdColumn, docs)
 }
