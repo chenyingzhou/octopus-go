@@ -66,11 +66,37 @@ func initMysqlClient(name string) error {
 }
 
 func GetESClient(name string) (*elasticsearch.Client, error) {
-	// TODO:
-	return nil, nil
+	var err error
+	_, ok := c.elasticSearch[name]
+	if !ok {
+		err = initESClient(name)
+	}
+	cp, ok := c.elasticSearch[name]
+	if !ok {
+		return nil, err
+	}
+	conn := cp.connection
+	return conn.(*elasticsearch.Client), err
 }
 
 func initESClient(name string) error {
-	// TODO:
+	initLck.Lock()
+	defer initLck.Unlock()
+	_, ok := c.elasticSearch[name]
+	if ok {
+		return nil
+	}
+	connConfig, ok := config.Config.DataSourceConfigMap.ElasticSearch[name]
+	if !ok {
+		return errors.New("ES config not exists, name: " + name)
+	}
+	client, err := elasticsearch.NewClient(elasticsearch.Config{Addresses: connConfig.Addresses})
+	if err != nil {
+		return err
+	}
+	if c.elasticSearch == nil {
+		c.elasticSearch = make(map[string]connectionPair)
+	}
+	c.elasticSearch[name] = connectionPair{connection: client, config: connConfig}
 	return nil
 }

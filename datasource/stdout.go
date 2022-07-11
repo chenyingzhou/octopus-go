@@ -7,14 +7,14 @@ import (
 	"time"
 )
 
-func Stdout(idColumn string, docs []map[string]interface{}) {
+func Stdout(targetSource string, targetSet string, docs []map[string]interface{}, idColumn string) {
 	count := len(docs)
-	fmt.Printf("文档总数:%d", count)
+	fmt.Printf("连接: %s, 数据集: %s, 文档总数:%d", targetSource, targetSet, count)
 	if len(docs) > 0 {
 		rand.Seed(time.Now().UnixNano())
 		i := rand.Intn(count)
 		doc := docs[i]
-		fmt.Printf("，其中第%d条(id:%s)为：\n", i+1, doc[idColumn])
+		fmt.Printf(", 随机选择第%d条(id=%s):\n", i+1, doc[idColumn])
 		fmt.Println("****************************************")
 		text, err := json.MarshalIndent(doc, "", "    ")
 		if err == nil {

@@ -16,6 +16,6 @@ datasource:
       password: root
       database: octopus_b
   elastic-search:
-    xxx:
+    local_es:
       addresses:
-        - 127.0.0.1:9200
+        - http://127.0.0.1:9200

@@ -54,5 +54,11 @@ func (cfg *Config) Handle(food plate.Food) {
 	for _, dataGroup := range dataGroups {
 		docs = append(docs, cfg.SourceTree.toDocument(dataGroup))
 	}
-	datasource.Stdout(cfg.SourceTree.IdColumn, docs)
+	switch cfg.TargetType {
+	case consts.SourceTypeElasticSearch:
+		datasource.ElasticSearchOut(cfg.TargetSource, cfg.TargetSet, docs, cfg.SourceTree.IdColumn)
+	case consts.SourceTypeMysql:
+	default:
+		datasource.Stdout(cfg.TargetSource, cfg.TargetSet, docs, cfg.SourceTree.IdColumn)
+	}
 }
