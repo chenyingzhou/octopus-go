@@ -59,3 +59,13 @@ func initContainer() {
 		Container[id] = config
 	}
 }
+
+func FindConfigs(datasource string, dataset string) []*Config {
+	configs := make([]*Config, 0)
+	for _, config := range Container {
+		if config.SourceTree.contains(datasource, dataset) {
+			configs = append(configs, &config)
+		}
+	}
+	return configs
+}

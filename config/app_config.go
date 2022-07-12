@@ -16,6 +16,7 @@ type DataSourceConfigMap struct {
 }
 
 type ConnectionConfig struct {
+	Listen    bool     `yaml:"listen"`
 	Host      string   `yaml:"host"`
 	Username  string   `yaml:"username"`
 	Password  string   `yaml:"password"`

@@ -288,3 +288,15 @@ func (st *SourceTree) matchParentSourceFilters(rows []map[string]string, parent 
 	}
 	return sf
 }
+
+func (st *SourceTree) contains(datasource string, dataset string) bool {
+	if st.DataSource == datasource && st.DataSet == dataset && st.Subscribed {
+		return true
+	}
+	for _, relation := range st.Relations {
+		if relation.SourceTree.contains(datasource, dataset) {
+			return true
+		}
+	}
+	return false
+}

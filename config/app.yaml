@@ -1,16 +1,19 @@
 datasource:
   mysql:
     app:
+      listen: false
       host: 127.0.0.1:3306
       username: root
       password: root
       database: octopus
     octopus_a:
+      listen: true
       host: 127.0.0.1:3306
       username: root
       password: root
       database: octopus_a
     octopus_b:
+      listen: true
       host: 127.0.0.1:3306
       username: root
       password: root
